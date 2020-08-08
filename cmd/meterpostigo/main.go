@@ -6,12 +6,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, World!")
-
-	configValue, err := config.GetStringValue("Any")
-	if err != nil {
-		panic("Configuration error, cannot operate.")
-	}
-
-	fmt.Println("Configuration today is:", configValue)
+	fmt.Println("Database host:", config.Config.Database.Host)
+	fmt.Println("Database password:", config.Config.Database.Password)
 }

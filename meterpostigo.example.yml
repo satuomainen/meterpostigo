@@ -1,0 +1,9 @@
+# Example configuration file. Copy this as `meterpostigo.yml` and fill in the real values
+database:
+    host: localhost
+    port: 3306
+    username: scott
+
+    # Provide DB password using the environment variable DB_PASSWORD
+    password: tiger
+    name: readingsdb
