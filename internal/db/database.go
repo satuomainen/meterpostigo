@@ -9,7 +9,7 @@ import (
 
 var DB *gorm.DB = nil
 
-func init() {
+func Initialize() {
 	dataSourceName := fmt.Sprintf(
 		"%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", // user:pass@(host:port)/dbname
 		config.Config.Database.Username,

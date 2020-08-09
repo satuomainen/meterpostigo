@@ -23,7 +23,7 @@ type Configuration struct {
 	} `yaml:"server"`
 }
 
-func init() {
+func Initialize() {
 	err := cleanenv.ReadConfig(configurationFilepath, &Config)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to read configuration '%s', cannot continue - %s", configurationFilepath, err))
