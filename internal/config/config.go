@@ -18,6 +18,9 @@ type Configuration struct {
 		Password string `env:"DB_PASSWORD" env-required:"true" env-description:"Database user password"`
 		Name     string `yaml:"name" env-required:"true" env:"DB_NAME" env-description:"Database name"`
 	} `yaml:"database"`
+	Server struct {
+		Port string `yaml:"port" env-required:"true" env:"PORT" env-default:"9000"`
+	} `yaml:"server"`
 }
 
 func init() {

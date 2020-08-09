@@ -1,18 +1,22 @@
 package main
 
 import (
+	"com.github/satuomainen/meterpostigo/internal/api"
 	"com.github/satuomainen/meterpostigo/internal/config"
-	"com.github/satuomainen/meterpostigo/internal/db"
-	"com.github/satuomainen/meterpostigo/internal/model"
+	"com.github/satuomainen/meterpostigo/internal/server"
 	"fmt"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	fmt.Println("Database host    :", config.Config.Database.Host)
-	fmt.Println("Database password:", config.Config.Database.Password)
+	e := echo.New()
 
-	var dataseries = new(model.DataSeries)
-	db.DB.First(&dataseries)
+	e.Use(middleware.Logger())
 
-	fmt.Printf("Sign of life from the database: %+v\n", dataseries)
+	var server server.MetricsServer
+	serverapi.RegisterHandlers(e, &server)
+
+	address := fmt.Sprintf("0.0.0.0:%s", config.Config.Server.Port)
+	e.Logger.Fatal(e.Start(address))
 }
