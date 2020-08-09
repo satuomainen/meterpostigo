@@ -4,6 +4,7 @@ import (
 	"com.github/satuomainen/meterpostigo/internal/api"
 	"com.github/satuomainen/meterpostigo/internal/service"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"net/http"
 )
 
@@ -18,7 +19,7 @@ func (MetricsServer) GetDataseriesSummaries(ctx echo.Context) error {
 	summaries, err := service.FindSummaries()
 
 	if err != nil {
-		ctx.Logger().Errorf("Failed to fetch dataseries summaries - %s", err)
+		log.Errorf("Failed to fetch dataseries summaries - %s", err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
@@ -39,7 +40,7 @@ func (MetricsServer) GetDataseriesDataSeriesIdReadings(
 	readings, err := service.FindLatest(dataSeriesId, limit)
 
 	if err != nil {
-		ctx.Logger().Errorf("Failed to fetch readings for data series '%d' - %s", dataSeriesId, err)
+		log.Errorf("Failed to fetch readings for data series '%d' - %s", dataSeriesId, err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
@@ -67,17 +68,17 @@ func (MetricsServer) PostSeriesDataSeriesIdAdd(ctx echo.Context, dataSeriesId in
 
 func saveNewValue(ctx echo.Context, dataSeriesId int64, apiKey string, value string) error {
 	if err := service.CheckApiKey(dataSeriesId, apiKey); err != nil {
-		ctx.Logger().Warnf("Unauthorized add request to series '%d' with key '%s'", dataSeriesId, apiKey)
+		log.Warnf("Unauthorized add request to series '%d' with key '%s'", dataSeriesId, apiKey)
 		return echo.NewHTTPError(http.StatusUnauthorized)
 	}
 
 	addedReading, err := service.AddReading(dataSeriesId, value)
 	if err != nil {
-		ctx.Logger().Errorf("Failed to add reading - %s", err)
+		log.Errorf("Failed to add reading - %s", err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	ctx.Logger().Infof("New value added to series %d", dataSeriesId)
+	log.Debugf("New value added to series %d", dataSeriesId)
 
 	return ctx.JSON(http.StatusCreated, addedReading)
 }

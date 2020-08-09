@@ -3,6 +3,9 @@ package service
 import (
 	"com.github/satuomainen/meterpostigo/internal/api"
 	"com.github/satuomainen/meterpostigo/internal/model"
+	"fmt"
+	"math"
+	"strconv"
 	"time"
 )
 
@@ -18,11 +21,11 @@ func mapReadingToDTO(reading model.Readings) serverapi.Reading {
 func mapDataSeriesSummaryToDTO(model model.DataSeriesSummaries) serverapi.DataSeriesSummary {
 	return serverapi.DataSeriesSummary{
 		CreatedAt:    toTimestampString(model.CreatedAt),
-		CurrentValue: &model.CurrentValue,
+		CurrentValue: toStringPointer(model.CurrentValue),
 		DataSeriesId: int64(model.DataSeriesID),
 		Id:           int64(model.ID),
-		MaxValue:     &model.MaxValue,
-		MinValue:     &model.MinValue,
+		MaxValue:     toStringPointer(model.MaxValue),
+		MinValue:     toStringPointer(model.MinValue),
 		UpdatedAt:    toTimestampString(model.UpdatedAt),
 	}
 }
@@ -30,4 +33,36 @@ func mapDataSeriesSummaryToDTO(model model.DataSeriesSummaries) serverapi.DataSe
 func toTimestampString(t time.Time) *string {
 	timestamp := t.Format(time.RFC3339)
 	return &timestamp
+}
+
+func min(a string, b string) string {
+	aNumeric, aErr := strconv.ParseFloat(a, 64)
+	bNumeric, bErr := strconv.ParseFloat(b, 64)
+
+	if aErr != nil || bErr != nil {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	return fmt.Sprintf("%.2f", math.Min(aNumeric, bNumeric))
+}
+
+func max(a string, b string) string {
+	aNumeric, aErr := strconv.ParseFloat(a, 64)
+	bNumeric, bErr := strconv.ParseFloat(b, 64)
+
+	if aErr != nil || bErr != nil {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	return fmt.Sprintf("%.2f", math.Max(aNumeric, bNumeric))
+}
+
+func toStringPointer(s string) *string {
+	return &s
 }

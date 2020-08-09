@@ -14,7 +14,7 @@ func AddReading(dataSeriesId int64, value string) (createdReading *serverapi.Rea
 
 	createResult := db.DB.Create(&reading)
 
-	// TODO: update the dataseries_summaries table with the new value
+	updateSummaryWithLatestValue(dataSeriesId, &reading)
 
 	dto := mapReadingToDTO(reading)
 	return &dto, createResult.Error
