@@ -14,3 +14,9 @@ indent_style = tab
 
 [{*.yml,*.yaml}]
 indent_size = 2
+
+[{*.js, *.json, *.ts, *.tsx}]
+indent_size = 2
+
+[*.html]
+indent_size = 2
