@@ -13,6 +13,9 @@ Run `make`. It will compile the binary into `bin/`.
 
 ## To run
 
+Copy the configuration file [meterpostigo.example.yml](./meterpostigo.example.yml)
+as `meterpostigo.yml` and change the example values to actual values in your env.
+
 After building the binary, run it: `bin/meterpostigo`.
 
 ## To change
