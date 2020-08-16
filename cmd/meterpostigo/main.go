@@ -17,6 +17,7 @@ func main() {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
+	e.Use(middleware.CORSWithConfig(config.GetCORSConfig()))
 
 	var server server.MetricsServer
 	serverapi.RegisterHandlers(e, &server)

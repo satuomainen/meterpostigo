@@ -10,3 +10,6 @@ database:
     # Provide DB password using the environment variable DB_PASSWORD
     password: tiger
     name: readingsdb
+cors:
+  allowOrigins:
+    - http://localhost:3000

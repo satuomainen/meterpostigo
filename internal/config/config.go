@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 )
 
 // Config provides the configuration
@@ -21,6 +23,33 @@ type Configuration struct {
 	Server struct {
 		Port string `yaml:"port" env-required:"true" env:"PORT" env-default:"9000"`
 	} `yaml:"server"`
+	CORS struct {
+		// See https://echo.labstack.com/middleware/cors
+		AllowOrigins []string `yaml:"allowOrigins"`
+	} `yaml:"cors"`
+}
+
+func GetCORSConfig() middleware.CORSConfig {
+
+	var allowOrigins []string = nil
+
+	if Config.CORS.AllowOrigins != nil && len(Config.CORS.AllowOrigins) > 0 {
+		allowOrigins = Config.CORS.AllowOrigins
+	}
+
+	log.Infof("Configured AllowOrigins: %v", allowOrigins)
+
+	var corsConfig = middleware.CORSConfig{
+		Skipper:          nil,
+		AllowOrigins:     allowOrigins,
+		AllowMethods:     nil,
+		AllowHeaders:     nil,
+		AllowCredentials: false,
+		ExposeHeaders:    nil,
+		MaxAge:           0,
+	}
+
+	return corsConfig
 }
 
 func Initialize() {
