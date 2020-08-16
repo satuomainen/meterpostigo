@@ -1,0 +1,47 @@
+.dashboard {
+    &--header {
+        text-align: center;
+        height: 230px;
+        background: url('../assets/img/hero.jpg') no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+
+        margin-bottom: 1.5rem;
+
+        color: #fff;
+    }
+
+    & .series-summary {
+
+    }
+
+    & .summary-item {
+
+        &--container {
+            width: 300px;
+            height: 400px;
+        }
+
+        &--actions {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+
+            & .gauge {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-width: 200px;
+                min-height: 200px;
+            }
+        }
+    }
+
+
+}
+
+
+
+
