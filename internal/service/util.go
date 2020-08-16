@@ -20,13 +20,16 @@ func mapReadingToDTO(reading model.Readings) serverapi.Reading {
 
 func mapDataSeriesSummaryToDTO(model model.DataSeriesSummaries) serverapi.DataSeriesSummary {
 	return serverapi.DataSeriesSummary{
-		CreatedAt:    toTimestampString(model.CreatedAt),
-		CurrentValue: toStringPointer(model.CurrentValue),
-		DataSeriesId: int64(model.DataSeriesID),
-		Id:           int64(model.ID),
-		MaxValue:     toStringPointer(model.MaxValue),
-		MinValue:     toStringPointer(model.MinValue),
-		UpdatedAt:    toTimestampString(model.UpdatedAt),
+		CreatedAt:             toTimestampString(model.CreatedAt),
+		CurrentValue:          toStringPointer(model.CurrentValue),
+		DataSeriesId:          int64(model.DataSeriesID),
+		DataSeriesDescription: model.DataSeries.Description,
+		DataSeriesName:        toStringPointer(model.DataSeries.Name),
+		DataSeriesLabel:       model.DataSeries.Label,
+		Id:                    int64(model.ID),
+		MaxValue:              toStringPointer(model.MaxValue),
+		MinValue:              toStringPointer(model.MinValue),
+		UpdatedAt:             toTimestampString(model.UpdatedAt),
 	}
 }
 

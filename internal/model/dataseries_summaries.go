@@ -10,6 +10,7 @@ type DataSeriesSummaries struct {
 	MinValue     string    `gorm:"column:min_value;type:varchar(255);not null"`
 	MaxValue     string    `gorm:"column:max_value;type:varchar(255);not null"`
 	DataSeriesID uint64    `gorm:"column:dataseries_id;type:int(10);not null;"`
+	DataSeries   DataSeries
 }
 
 func (t *DataSeriesSummaries) TableName() string {

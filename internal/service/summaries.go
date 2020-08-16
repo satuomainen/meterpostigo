@@ -9,7 +9,7 @@ import (
 
 func FindSummaries() (*[]serverapi.DataSeriesSummary, error) {
 	var summaries []model.DataSeriesSummaries
-	queryStatus := db.DB.Find(&summaries)
+	queryStatus := db.DB.Preload("DataSeries").Find(&summaries)
 
 	if queryStatus.Error != nil {
 		return nil, queryStatus.Error

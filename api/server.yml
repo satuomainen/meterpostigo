@@ -133,6 +133,12 @@ components:
         dataSeriesId:
           type: integer
           format: int64
+        dataSeriesDescription:
+          type: string
+        dataSeriesName:
+          type: string
+        dataSeriesLabel:
+          type: string
       required: [id, dataSeriesId]
     Reading:
       type: object
