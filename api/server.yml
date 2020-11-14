@@ -98,6 +98,36 @@ paths:
           description: API key missing of not valid
         '400':
           description: The value could not be stored
+  /dataseries/{dataSeriesId}/averages:
+    get:
+      operationId: GetDataseriesAveragesByDataSeriesId
+      description: Query daily reading averages
+      parameters:
+        - in: path
+          name: dataSeriesId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Id of the dataseries
+        - in: query
+          name: days
+          required: false
+          schema:
+            type: integer
+            maximum: 90
+            minimum: 1
+            default: 30
+          description: Maximum number of days worth of averages to return
+      responses:
+        '200':
+          description: A JSON array of average reading object matching the query parameters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AverageReading'
   /series/{dataSeriesId}/add:
     post:
       description: Legacy endpoint for adding a reading to the dataseries
@@ -190,3 +220,12 @@ components:
         api_key:
           type: string
       required: [ value, api_key ]
+    AverageReading:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        value:
+          type: string
+      required: [ date, value ]

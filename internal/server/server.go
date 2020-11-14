@@ -59,6 +59,19 @@ func (MetricsServer) GetDataseriesDataSeriesIdReadings(
 	return ctx.JSON(http.StatusOK, readings)
 }
 
+func (MetricsServer) GetDataseriesAveragesByDataSeriesId(
+	ctx echo.Context,
+	dataSeriesId int64,
+	params serverapi.GetDataseriesAveragesByDataSeriesIdParams,
+) error {
+	if averages, err := service.FindAverages(dataSeriesId, params.Days); err != nil {
+		log.Errorf("Failed to fetch averages for data series '%d' for %d days - %s", dataSeriesId, params.Days, err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	} else {
+		return ctx.JSON(http.StatusOK, averages)
+	}
+}
+
 // PostDataseriesDataSeriesIdReadings serves (POST /dataseries/{dataSeriesId}/readings)
 func (MetricsServer) PostDataseriesDataSeriesIdReadings(ctx echo.Context, dataSeriesId int64) error {
 	req := serverapi.NewReading{}

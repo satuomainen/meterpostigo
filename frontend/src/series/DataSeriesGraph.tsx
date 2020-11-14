@@ -1,42 +1,30 @@
 import React from 'react';
-import moment from 'moment';
 import { CartesianGrid, Label, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { Reading, Series } from './seriesSlice';
+import { Summary } from '../dashboard/summarySlice';
 
-const TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+interface SeriesData {
+  summary: Summary,
+  readings: Datapoint[]
+}
 
-interface Datapoint {
+export interface Datapoint {
   x: string,
   y: number,
   unit: string
 }
 
-function convertReading(reading: Reading, unit: string): Datapoint {
-  return {
-    x: moment(reading.createdAt).format(TIMESTAMP_FORMAT),
-    y: parseFloat(reading.value),
-    unit,
-  };
-}
-
-function createChartData(readings: Reading[] | null, unit: string) {
-  return readings?.map(r => convertReading(r, unit));
-}
-
-export default function DataSeriesGraph(props: Series) {
+export default function DataSeriesGraph(props: SeriesData) {
   const { summary, readings } = props;
 
   if (!readings || !summary) {
     return null;
   }
 
-  const data = createChartData(readings, summary?.dataSeriesLabel);
-
   return (
     <ResponsiveContainer>
       <LineChart
-        data={data}
+        data={readings}
         width={500}
         height={350}
         margin={{ left: 20, bottom: 20 }}

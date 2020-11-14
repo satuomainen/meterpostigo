@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 import Papa from 'papaparse';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
@@ -13,13 +14,16 @@ import Typography from '@material-ui/core/Typography';
 import './DataSeries.scss';
 
 import { RootState } from '../store';
-import { fetchSeries, Reading, Series, SeriesState } from './seriesSlice';
-import DataSeriesGraph from './DataSeriesGraph';
+import { fetchSeries, Reading, ReadingAverage, Series, SeriesState } from './seriesSlice';
+import DataSeriesGraph, { Datapoint } from './DataSeriesGraph';
 
 interface DownloadableRecord {
   "Reading time": string,
   "Value": string
 }
+
+const TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 function downloadContent(content: string, seriesName: string) {
   const element = document.createElement("a");
@@ -32,10 +36,17 @@ function downloadContent(content: string, seriesName: string) {
   element.click();
 }
 
-function mapToDownloadableRecord(reading: Reading): DownloadableRecord {
+function mapReadingToDownloadableRecord(reading: Reading): DownloadableRecord {
   return {
     "Reading time": reading.createdAt,
     "Value": reading.value
+  };
+}
+
+function mapReadingAverageToDownloadableRecord(average: ReadingAverage): DownloadableRecord {
+  return {
+    "Reading time": average.date,
+    "Value": average.value
   };
 }
 
@@ -44,6 +55,38 @@ function getSeriesName(series: Series | null) {
     return 'Loading...';
   }
   return series.summary.dataSeriesName;
+}
+
+function convertReading(reading: Reading, unit: string): Datapoint {
+  return {
+    x: moment(reading.createdAt).format(TIMESTAMP_FORMAT),
+    y: Number(parseFloat(reading.value).toFixed(1)),
+    unit,
+  };
+}
+
+function mapReadingsToDatapoints(readings: Reading[] | null, unit: string): Datapoint[] {
+  if (!readings) {
+    return []
+  }
+
+  return readings?.map(r => convertReading(r, unit));
+}
+
+function convertAverage(average: ReadingAverage, unit: string): Datapoint {
+  return {
+    x: moment(average.date).format(DATE_FORMAT),
+    y: Number(parseFloat(average.value).toFixed(1)),
+    unit
+  };
+}
+
+function mapAveragesToDatapoints(averages: ReadingAverage[], unit: string) {
+  if (!averages) {
+    return [];
+  }
+
+  return averages?.map(a => convertAverage(a, unit));
 }
 
 export default function DataSeries() {
@@ -60,11 +103,14 @@ export default function DataSeries() {
   function downloadWanted() {
     if (selectedTab === 0) {
       if (series?.readings) {
-        const csv = Papa.unparse(series.readings.map(mapToDownloadableRecord));
+        const csv = Papa.unparse(series.readings.map(mapReadingToDownloadableRecord));
         downloadContent(csv, getSeriesName(series));
       }
     } else if (selectedTab === 1) {
-      alert('Downloading averages not implemented yet');
+      if (series?.averages) {
+        const csv = Papa.unparse(series.averages.map(mapReadingAverageToDownloadableRecord))
+        downloadContent(csv, getSeriesName(series));
+      }
     }
   }
 
@@ -74,11 +120,6 @@ export default function DataSeries() {
     } else {
       setIsDownloadAvailable(true);
     }
-
-    // TODO(satuomainen)
-    // if (!series.averages) {
-    //   dispatch(fetchAverages(id));
-    // }
   }, [ id, series, dispatch ]);
 
   const seriesName = useMemo(() => {
@@ -86,16 +127,24 @@ export default function DataSeries() {
   }, [ series ]);
 
   const readingGraph = useMemo(() => {
-    if (!series) {
+    if (!series?.summary) {
       return null;
     }
 
-    let readings = null;
-    switch (selectedTab) {
-      case 0: {
-        readings = series.readings;
-      }
+    const unit = series?.summary?.dataSeriesLabel || '';
+    let readings: Datapoint[] = [];
+    if (selectedTab === 0) {
+        if (!series?.readings) {
+          return null;
+        }
+        readings = mapReadingsToDatapoints(series.readings, unit);
+    } else if (selectedTab === 1) {
+        if (!series?.averages) {
+          return null;
+        }
+        readings = mapAveragesToDatapoints(series.averages, unit);
     }
+
     return <DataSeriesGraph readings={readings} summary={series.summary}/>;
   }, [ series, selectedTab ]);
 

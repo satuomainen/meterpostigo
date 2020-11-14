@@ -9,9 +9,15 @@ export interface Reading {
   value: string
 }
 
+export interface ReadingAverage {
+  date: string,
+  value: string
+}
+
 export interface Series {
   summary: Summary | null,
-  readings: Reading[] | null
+  readings: Reading[] | null,
+  averages: ReadingAverage[] | null,
 }
 
 export interface SeriesState {
@@ -39,10 +45,25 @@ const fetchSeries = createAsyncThunk<Series, number, object>(
     const readings = readingsResponse.data;
     readings.sort(compareReadingsByTime);
 
+    const averagesUrl = `http://localhost:9000/dataseries/${dataSeriesId}/averages`;
+    const averagesResponse = await axios.get(averagesUrl);
+    const averages = averagesResponse.data;
+    averages.sort((l: ReadingAverage, r: ReadingAverage) => l.date.localeCompare(r.date));
+
     return {
       summary: summaryResponse.data,
-      readings
+      readings,
+      averages,
     };
+  });
+
+const fetchAverages = createAsyncThunk<ReadingAverage[], number, object>(
+  'summaries/fetchAverages',
+  async (dataSeriesId: number) => {
+    const averagesUrl = `http://localhost:9000/dataseries/${dataSeriesId}/summary`;
+    const averagesResponse = await axios.get(averagesUrl);
+
+    return averagesResponse.data;
   });
 
 const seriesSlice = createSlice({
@@ -63,6 +84,7 @@ const seriesSlice = createSlice({
 
 export {
   fetchSeries,
+  fetchAverages,
 };
 
 export default seriesSlice.reducer;

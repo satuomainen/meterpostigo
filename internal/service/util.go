@@ -4,6 +4,7 @@ import (
 	"com.github/satuomainen/meterpostigo/internal/api"
 	"com.github/satuomainen/meterpostigo/internal/model"
 	"fmt"
+	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"math"
 	"strconv"
 	"time"
@@ -15,6 +16,17 @@ func mapReadingToDTO(reading model.Readings) serverapi.Reading {
 		Id:        int64(reading.ID),
 		UpdatedAt: toTimestampString(reading.UpdatedAt),
 		Value:     reading.Value,
+	}
+}
+
+
+func mapAverageReadingToDTO(average ReadingAverage) serverapi.AverageReading {
+
+	return serverapi.AverageReading{
+		Date:  openapi_types.Date{
+			Time: average.Date,
+		},
+		Value: average.Value,
 	}
 }
 
