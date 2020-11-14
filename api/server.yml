@@ -22,6 +22,25 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DataSeriesSummary'
+  /dataseries/{dataSeriesId}/summary:
+    get:
+      operationId: GetDataseriesSummariesDataSeriesId
+      description: Return summary for requested dataseries
+      parameters:
+        - in: path
+          name: dataSeriesId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Id of the dataseries
+      responses:
+        '200':
+          description: A data series summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSeriesSummary'
   /dataseries/{dataSeriesId}/readings:
     get:
       description: Query readings
@@ -139,7 +158,7 @@ components:
           type: string
         dataSeriesLabel:
           type: string
-      required: [id, dataSeriesId]
+      required: [ id, dataSeriesId ]
     Reading:
       type: object
       properties:
@@ -154,7 +173,7 @@ components:
           format: datetime
         value:
           type: string
-      required: [id, createdAt, value]
+      required: [ id, createdAt, value ]
     NewReading:
       type: object
       properties:
@@ -162,7 +181,7 @@ components:
           type: string
         apiKey:
           type: string
-      required: [value, apiKey]
+      required: [ value, apiKey ]
     ReadingForm:
       type: object
       properties:
@@ -170,4 +189,4 @@ components:
           type: string
         api_key:
           type: string
-      required: [value, api_key]
+      required: [ value, api_key ]

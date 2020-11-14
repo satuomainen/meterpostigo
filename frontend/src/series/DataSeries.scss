@@ -1,4 +1,4 @@
-.dashboard {
+.dataseries {
     &--header {
         text-align: center;
         height: 230px;
@@ -11,6 +11,10 @@
         margin-bottom: 1.5rem;
 
         color: #fff;
+    }
+
+    &--graph-container {
+        height: 50vh;
     }
 
     & .series-summary {

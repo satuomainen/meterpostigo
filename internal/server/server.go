@@ -26,6 +26,18 @@ func (MetricsServer) GetDataseriesSummaries(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, summaries)
 }
 
+// GetDataseriesSummariesDataSeriesId serves (GET /dataseries/summaries/{dataSeriesId})
+func (MetricsServer) GetDataseriesSummariesDataSeriesId(ctx echo.Context, dataSeriesId int64) error {
+	summary, err := service.FindSummary(dataSeriesId)
+
+	if err != nil {
+		log.Errorf("Failed to fetch dataseries summary for series %d - %s", dataSeriesId, err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	return ctx.JSON(http.StatusOK, summary)
+}
+
 // GetDataseriesDataSeriesIdReadings serves (GET /dataseries/{dataSeriesId}/readings)
 func (MetricsServer) GetDataseriesDataSeriesIdReadings(
 	ctx echo.Context,

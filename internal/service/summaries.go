@@ -23,6 +23,22 @@ func FindSummaries() (*[]serverapi.DataSeriesSummary, error) {
 	return &dtoList, nil
 }
 
+func FindSummary(dataSeriesId int64) (*serverapi.DataSeriesSummary, error) {
+	var summary model.DataSeriesSummaries
+	queryStatus := db.DB.
+		Preload("DataSeries").
+		Where("dataseries_id = ?", dataSeriesId).
+		Find(&summary)
+
+	if queryStatus.Error != nil {
+		return nil, queryStatus.Error
+	}
+
+	dto := mapDataSeriesSummaryToDTO(summary)
+
+	return &dto, nil
+}
+
 func updateSummaryWithLatestValue(dataSeriesId int64, reading *model.Readings) {
 	var currentSummary model.DataSeriesSummaries
 	queryResult := db.DB.
