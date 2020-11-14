@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
+import Papa from 'papaparse';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -11,13 +12,31 @@ import Typography from '@material-ui/core/Typography';
 
 import './DataSeries.scss';
 
-import { Summary } from '../dashboard/summarySlice';
 import { RootState } from '../store';
-import { fetchSeries, Series, SeriesState } from './seriesSlice';
+import { fetchSeries, Reading, Series, SeriesState } from './seriesSlice';
 import DataSeriesGraph from './DataSeriesGraph';
 
-interface DataSeriesProps {
-  summary: Summary
+interface DownloadableRecord {
+  "Reading time": string,
+  "Value": string
+}
+
+function downloadContent(content: string, seriesName: string) {
+  const element = document.createElement("a");
+  const file = new Blob([content], {type: 'text/csv'});
+
+  element.href = URL.createObjectURL(file);
+  element.download = `${seriesName}.csv`;
+  document.body.appendChild(element);
+
+  element.click();
+}
+
+function mapToDownloadableRecord(reading: Reading): DownloadableRecord {
+  return {
+    "Reading time": reading.createdAt,
+    "Value": reading.value
+  };
 }
 
 function getSeriesName(series: Series | null) {
@@ -31,6 +50,7 @@ export default function DataSeries() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [ selectedTab, setSelectedTab ] = useState(0);
+  const [ isDownloadAvailable, setIsDownloadAvailable ] = useState(false);
   const { series } = useSelector<RootState, SeriesState>(state => state.series);
 
   function onTabChanged(event: object, newTabIndex: number) {
@@ -38,14 +58,27 @@ export default function DataSeries() {
   }
 
   function downloadWanted() {
-    // TODO(satuomainen): download from backend
-    alert('Download not implemented yet');
+    if (selectedTab === 0) {
+      if (series?.readings) {
+        const csv = Papa.unparse(series.readings.map(mapToDownloadableRecord));
+        downloadContent(csv, getSeriesName(series));
+      }
+    } else if (selectedTab === 1) {
+      alert('Downloading averages not implemented yet');
+    }
   }
 
   useEffect(() => {
     if (!series) {
       dispatch(fetchSeries(id));
+    } else {
+      setIsDownloadAvailable(true);
     }
+
+    // TODO(satuomainen)
+    // if (!series.averages) {
+    //   dispatch(fetchAverages(id));
+    // }
   }, [ id, series, dispatch ]);
 
   const seriesName = useMemo(() => {
@@ -87,7 +120,14 @@ export default function DataSeries() {
               <Tab value={0} label="Time series"/>
               <Tab value={1} label="Daily averages"/>
             </Tabs>
-            <Button color="primary" variant="contained" onClick={downloadWanted}>Download as CSV</Button>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={downloadWanted}
+              disabled={!isDownloadAvailable}
+            >
+              Download as CSV
+            </Button>
           </Grid>
           <Grid item className="dataseries--graph-container">
             {readingGraph}
