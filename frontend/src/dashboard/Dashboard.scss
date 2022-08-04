@@ -18,10 +18,12 @@
     }
 
     & .summary-item {
+        display: flex;
+        align-items: stretch;
 
         &--container {
+            display: flex;
             width: 300px;
-            height: 400px;
         }
 
         &--actions {

@@ -19,6 +19,11 @@ const gaugeStyles = {
   minMaxValues: {
     fontSize: '0.75rem',
   },
+  colors: {
+    red: '#e74c3c',
+    orange: '#f1c40f',
+    green: '#1abc9c',
+  },
 };
 
 function toGaugeValue(s: string): number | undefined {
@@ -39,38 +44,65 @@ function createValueFormatter(label: string) {
   return (value: number) => `${value}`;
 }
 
+function calculateGaugeColor(dataSeriesSummary: Summary) : string {
+  const max = toGaugeValue(dataSeriesSummary.maxValue);
+  const min = toGaugeValue(dataSeriesSummary.minValue);
+  const current = toGaugeValue(dataSeriesSummary.currentValue);
+
+  if (!max || !min || !current) {
+    return gaugeStyles.colors.green;
+  }
+
+  const range = max - min;
+  const value = max - current;
+  const percentage = (value / range) * 100;
+
+  if (percentage <= 10 || percentage >= 90) {
+    return gaugeStyles.colors.red;
+  }
+
+  if (percentage > 10 && percentage <= 20) {
+    return gaugeStyles.colors.orange;
+  }
+
+  if (percentage >= 80 && percentage < 90) {
+    return gaugeStyles.colors.orange;
+  }
+
+  return gaugeStyles.colors.green;
+}
+
 interface ValueGaugeProps {
-  dataSeriesSummary: Summary
+  dataSeriesSummary: Summary;
 }
 
 export default function SummaryGauge({ dataSeriesSummary }: ValueGaugeProps) {
 
   return (
-    <div>
-      <Button href={`/dataseries/${dataSeriesSummary.dataSeriesId}`} className="summary-item">
-        <Card className="summary-item--container">
-          <CardActionArea className="summary-item--actions">
-            <CardMedia className="gauge">
-              <Gauge
-                label={dataSeriesSummary.dataSeriesName}
-                topLabelStyle={gaugeStyles.gaugeTitle}
-                value={toGaugeValue(dataSeriesSummary.currentValue)}
-                valueLabelStyle={gaugeStyles.gaugeValue}
-                valueFormatter={createValueFormatter(dataSeriesSummary.dataSeriesLabel)}
-                min={toGaugeValue(dataSeriesSummary.minValue)}
-                max={toGaugeValue(dataSeriesSummary.maxValue)}
-                minMaxLabelStyle={gaugeStyles.minMaxValues}
-                width={250}
-                height={250}
-              />
-            </CardMedia>
-            <CardContent>
-              <Typography>{dataSeriesSummary.dataSeriesName} ({dataSeriesSummary.dataSeriesLabel})</Typography>
-              {dataSeriesSummary.dataSeriesDescription}
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Button>
-    </div>
+    <Button href={`/dataseries/${dataSeriesSummary.dataSeriesId}`} className="summary-item">
+      <Card className="summary-item--container">
+        <CardActionArea className="summary-item--actions">
+          <CardMedia className="gauge">
+            <Gauge
+              label={dataSeriesSummary.dataSeriesName}
+              topLabelStyle={gaugeStyles.gaugeTitle}
+              value={toGaugeValue(dataSeriesSummary.currentValue)}
+              valueLabelStyle={gaugeStyles.gaugeValue}
+              valueFormatter={createValueFormatter(dataSeriesSummary.dataSeriesLabel)}
+              min={toGaugeValue(dataSeriesSummary.minValue)}
+              max={toGaugeValue(dataSeriesSummary.maxValue)}
+              minMaxLabelStyle={gaugeStyles.minMaxValues}
+              width={250}
+              height={250}
+              color={calculateGaugeColor(dataSeriesSummary)}
+            />
+          </CardMedia>
+          <CardContent>
+            <Typography>{dataSeriesSummary.dataSeriesName} ({dataSeriesSummary.dataSeriesLabel})</Typography>
+            {dataSeriesSummary.dataSeriesDescription}
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Button>
   );
 }
