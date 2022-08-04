@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import './Dashboard.scss';
@@ -35,9 +34,9 @@ export default function Dashboard() {
       </div>
       <Container maxWidth="xl">
 
-        <Grid container spacing={2} alignItems="stretch">
+        <div className="gauges">
           {createSummaryItems()}
-        </Grid>
+        </div>
       </Container>
     </div>
   );
